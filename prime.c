@@ -3,19 +3,41 @@
 #include <stdlib.h>
 #include <errno.h>
 #include <signal.h>
-int main(){
+#include <string.h>
+#include <sys/types.h>
+#include <sys/wait.h>
+
+#define NUMBER_WAIT_INTERVAL 5
+
+int main(void){
+
+int pipefds[2], buffer;
+
+if(pipe(pipefds) == -1){
+perror("pipe");
+exit(EXIT_FAILURE);
+}
 
 int user, flag=0;
+
 printf("Please enter a number to check either prime or not:\n");
 scanf("%d",&user);
 
-if((user>0)&&((user==1)||(user%2==0))){
-printf("%d is not a prime number.\n",user);
+printf("Writing number to pipe...\n");
+write(pipefds[1], &user, sizeof(user));
+printf("Done.\n\n");
+
+printf("Reading number from pipe...\n");
+read(pipefds[0], &buffer, sizeof(buffer));
+printf("Done.\n\n");
+
+if((buffer>0)&&((buffer==1)||(buffer%2==0))){
+printf("%d is not a prime number.\n",buffer);
 flag=1;
 }
 
-else if((user>0)&&(user%2!=0)){
-printf("%d is prime number.\n",user);
+else if((buffer>0)&&(buffer%2!=0)){
+printf("%d is prime number.\n",buffer);
 flag=0;
 }
 
@@ -23,5 +45,7 @@ else{
 printf("You have entered wrong value.\n");
 }
 
-return 0;
+sleep(NUMBER_WAIT_INTERVAL);
+
+return EXIT_SUCCESS;
 }
