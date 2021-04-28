@@ -7,9 +7,15 @@
 #include <sys/types.h>
 #include <sys/wait.h>
 
-#define NUMBER_WAIT_INTERVAL 5
+#define NUMBER_WAIT_INTERVAL 10
 
 int main(void){
+
+void sigint_handler(int sig);
+
+if(signal(SIGINT, sigint_handler) == SIG_ERR){
+perror("signal");
+}
 
 int pipefds[2], buffer;
 
@@ -47,5 +53,11 @@ printf("You have entered wrong value.\n");
 
 sleep(NUMBER_WAIT_INTERVAL);
 
-return EXIT_SUCCESS;
+return 0;
 }
+
+void sigint_handler(int sig){
+printf("\n");
+EXIT_SUCCESS;
+}
+
